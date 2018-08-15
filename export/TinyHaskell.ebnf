@@ -1,0 +1,48 @@
+# Using the same names as https://www.haskell.org/onlinereport/haskell2010/haskellch10.html
+
+@@grammar :: TinyHaskell
+@@comments :: /{-((?:.|\n)*?)-}/
+@@eol_comments :: /--([^\n]*?)$/
+@@parseinfo :: True
+@@left_recursion :: True
+
+
+start = module $ ;
+
+module::Module = 'module' name:modid 'where' imports:impdecls decls:topdecls ;
+
+impdecls = { impdecl }* ;
+
+topdecls = { topdecl }* ;
+
+impdecl = 'import' @:modid ;
+
+topdecl = typedecl | datadecl ;
+
+typedecl::TypeDecl = 'type' name:simpletype '=' rhs:type ;
+
+datadecl::ADTDecl = 'data' name:simpletype '=' constructors:constrs [ deriving ] ;
+
+simpletype = tycon ;
+
+type = tycon ;
+
+tycon = conid ;
+
+tycls = conid ;
+
+constrs = '|'.{ constr }+ ;
+
+constr::Constructor = name:conid args:fielddecls ;
+
+fielddecls = '{' ','.{ fielddecl  }* '}' | {};
+
+fielddecl::FieldDecl = name:varid '::' type:type ;
+
+deriving = 'deriving' '(' ','.{ tycls }* ')' ;
+
+modid::str = /[A-Z][a-z_A-Z0-9]*(\.[A-Z][a-z_A-Z0-9]*)*/ ;
+
+conid::str = /[A-Z][a-z_A-Z0-9]*/ ;
+
+varid::str = /[a-z_][a-z_A-Z0-9]*/ ;
